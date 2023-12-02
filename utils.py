@@ -1,25 +1,39 @@
-import re
-
+import shlex
 
 def split_instruction(instruction):
-    # Define a regular expression pattern for matching assembly instructions
-    pattern = re.compile(r'^\s*([a-zA-Z_]\w*)?\s*([a-zA-Z]+)\s*(.*)$')
-    # Use the pattern to match the input instruction
-    match = pattern.match(instruction)
+    # Use shlex to split the instruction into tokens
+    tokens = shlex.split(instruction)
 
-    if match:
-        # Extract label, opcode, and operands from the matched groups
-        label = match.group(1)
-        opcode = match.group(2)
-        operands = [operand.strip() for operand in match.group(3).split(',') if operand.strip()]
+    # Extract label, opcode, and operands from the tokens
+    
+    if len(tokens) == 3:
+        label = tokens[0]
+        opcode = tokens[1]
+        operands = tokens[2].split(",")
 
-        # Create a dictionary to represent the structure
-        result = {
-            "label": label,
-            "opcode": opcode,
-            "operands": operands
-        }
+    elif len(tokens) == 2:
+        label = ""
+        opcode = tokens[0]
+        operands = tokens[1].split(",")
 
-        return result
+    elif len(tokens) == 1:
+        label = ""
+        opcode = tokens[0]
+        operands = []
     else:
-        return None
+        label = None
+        opcode = None
+        operands = None
+
+    # Create a dictionary to represent the structure
+    result = {
+        "label": label,
+        "opcode": opcode,
+        "operands": operands
+    }
+
+    return result
+
+
+class InvalidMacroException(Exception):
+    print("Invalid macro exception")

@@ -2,7 +2,7 @@ copy start 1000
 mov AX,DX
 mov CX,BX
 addnum macro &a,&b,&c
-mov beta,gamma
+mov &a,&b
 alpha resw 1
 beta resw 1
 endmacro

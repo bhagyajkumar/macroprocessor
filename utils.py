@@ -1,5 +1,7 @@
 import shlex
 
+from tabulate import tabulate
+
 def split_instruction(instruction):
     # Use shlex to split the instruction into tokens
     tokens = shlex.split(instruction)
@@ -33,6 +35,13 @@ def split_instruction(instruction):
     }
 
     return result
+
+
+class CommandType():
+    INVOCATION="INVOCATION"
+    NORMAL="NORMAL"
+    DEFINITION="DEFINITION"
+    MACRO_LITERALS="MACRO_LITERALS"
 
 
 class InvalidMacroException(Exception):

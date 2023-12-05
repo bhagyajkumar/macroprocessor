@@ -1,6 +1,5 @@
 import shlex
 
-from tabulate import tabulate
 
 def split_instruction(instruction):
     # Use shlex to split the instruction into tokens

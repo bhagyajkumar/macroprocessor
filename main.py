@@ -19,6 +19,7 @@ class MacroProcessor():
         self.inter_table = []
         self.current_address = 0
         self.is_processing_macro = False
+        self.arguments = {}
 
 
     def get_line(self):
@@ -47,16 +48,11 @@ class MacroProcessor():
 
 
     def fill_deftab(self, macro_name:str, arguments:list):
+        self.arguments[macro_name] = arguments
         print("processing macro")
-        arg_mapping = {}
-        for i,j in enumerate(arguments):
-            arg_mapping[j] = f"${i}"
-
-        print(arg_mapping)
         name_tab_content = {
             "name" : macro_name,
             "start": self.current_address,
-            "arguments": arg_mapping,
             "end" : None
         }
         processing = True
@@ -100,7 +96,7 @@ class MacroProcessor():
         tabular_data = []
         for i in self.name_tab:
             tabular_data.append(
-                (i["name"], i["start"], i["end"], str(i["arguments"]))
+                (i["name"], i["start"], i["end"])
             )
         table = tabulate(
             headers = ["name", "start", "end", "arguments"],
@@ -137,7 +133,7 @@ class MacroProcessor():
         return CommandType.NORMAL
     
 
-    def get_macro_expansion(self,macro_name:str):
+    def get_macro_expansion(self,macro_name:str,params:list):
         macro_info = None
         for i in self.name_tab:
             if i["name"] == macro_name:
@@ -149,23 +145,31 @@ class MacroProcessor():
         expansion = []
         for i in range(macro_info["start"], macro_info["end"]):
             expansion.append(self.def_tab[i])
+
+        for i in range(len(expansion)):
+            for j in range(len(expansion[i]["operands"])):
+                expansion[i]["operands"][j] = params[j]
+        
         return expansion
 
 
     def generate_processed_assembly(self):
-        # __import__('pprint').pprint(self.original_processed)
+        # __imrort__('pprint').pprint(self.original_processed)
         for i in self.original_processed:
             command_type = self.get_command_type(i)
             if command_type == CommandType.NORMAL:
-                print(i, "normal")
+                print(self.detokenize(i))
             elif command_type == CommandType.INVOCATION:
-                invocation = self.get_macro_expansion(i["opcode"])
+                invocation = self.get_macro_expansion(i["opcode"], i["operands"])
                 for i in invocation:
-                    print(i, "invlocation lines")
+                    print(self.detokenize(i))
             else:
-                print(i, command_type)
+                # print(self.detokenize(i))
+                pass
     
-
+    def detokenize(self, command:dict):
+        detokenized = "{}\t{}\t{}".format(command["label"], command["opcode"], ",".join(i for i in command["operands"]))
+        return detokenized
 
 def main():
     macroprocessor = MacroProcessor("PGM.ASM")

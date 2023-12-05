@@ -1,4 +1,4 @@
-from utils import InvalidMacroException, split_instruction, CommandType
+from utils import InvalidMacroException, MacroNotFound, split_instruction, CommandType
 from tabulate import tabulate
 
 class MacroProcessor():
@@ -135,15 +135,35 @@ class MacroProcessor():
         elif self.is_macro(command["opcode"].lower()):
             return CommandType.INVOCATION
         return CommandType.NORMAL
+    
+
+    def get_macro_expansion(self,macro_name:str):
+        macro_info = None
+        for i in self.name_tab:
+            if i["name"] == macro_name:
+                macro_info = i
+
+        if macro_info is None:
+            raise MacroNotFound
+
+        expansion = []
+        for i in range(macro_info["start"], macro_info["end"]):
+            expansion.append(self.def_tab[i])
+        return expansion
 
 
     def generate_processed_assembly(self):
-        __import__('pprint').pprint(self.original_processed)
+        # __import__('pprint').pprint(self.original_processed)
         for i in self.original_processed:
-            if self.get_command_type(i) == CommandType.NORMAL:
-                print(i)
-            elif self.get_command_type(i) == CommandType.INVOCATION:
-                print("invocation")
+            command_type = self.get_command_type(i)
+            if command_type == CommandType.NORMAL:
+                print(i, "normal")
+            elif command_type == CommandType.INVOCATION:
+                invocation = self.get_macro_expansion(i["opcode"])
+                for i in invocation:
+                    print(i, "invlocation lines")
+            else:
+                print(i, command_type)
     
 
 

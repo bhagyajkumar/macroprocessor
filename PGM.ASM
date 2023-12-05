@@ -11,4 +11,5 @@ alpha resw 1
 beta resw 1
 mend
 addnum 1,2,3
+testm 1,2,3
 gamma resw 1

@@ -46,3 +46,6 @@ class CommandType():
 
 class InvalidMacroException(Exception):
     print("Invalid macro exception")
+
+class MacroNotFound(Exception):
+    print("Macro invoked is not defined")

@@ -13,4 +13,5 @@ mend
 addnum 4,5,6
 testm 1,2,3
 testm ax,bx,cx
+testm as,as,as
 gamma resw 1

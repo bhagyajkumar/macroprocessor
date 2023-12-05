@@ -20,6 +20,7 @@ class MacroProcessor():
         self.current_address = 0
         self.is_processing_macro = False
         self.arguments = {}
+        self.invocation_count = {}
 
 
     def get_line(self):
@@ -134,6 +135,12 @@ class MacroProcessor():
     
 
     def get_macro_expansion(self,macro_name:str,params:list):
+        try:
+            inv_frequency = self.invocation_count[macro_name]
+        except:
+            inv_frequency, self.invocation_count[macro_name] = 0,0
+
+        self.invocation_count[macro_name] = inv_frequency+1
         macro_info = None
         for i in self.name_tab:
             if i["name"] == macro_name:
@@ -144,7 +151,9 @@ class MacroProcessor():
 
         expansion = []
         for i in range(macro_info["start"], macro_info["end"]):
-            expansion.append(self.def_tab[i])
+            command = self.def_tab[i].copy()
+            command["label"] = command.get("label", "").replace("$", str(inv_frequency))
+            expansion.append(command)
 
         for i in range(len(expansion)):
             for j in range(len(expansion[i]["operands"])):

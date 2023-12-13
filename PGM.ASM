@@ -1,6 +1,6 @@
 copy start 1000
 testm macro &a,&b,&c
-summ$ mov &a,&b,&c
+label$ mov &a,&b,&c
 mov &c,&b
 mov AX,DX
 mov CX,BX
@@ -15,3 +15,4 @@ testm 1,2,3
 testm ax,bx,cx
 testm as,as,as
 gamma resw 1
+end

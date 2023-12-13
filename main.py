@@ -1,5 +1,6 @@
 from utils import InvalidMacroException, MacroNotFound, split_instruction, CommandType
 from tabulate import tabulate
+import pprint
 
 class MacroProcessor():
 
@@ -11,6 +12,8 @@ class MacroProcessor():
         processed = []
         for i in lines:
             processed.append(split_instruction(i))
+
+        pprint.pprint(processed)
         
         self.original_processed = processed.copy()
         self.processed_content = processed.copy()
@@ -150,7 +153,7 @@ class MacroProcessor():
             raise MacroNotFound
 
         expansion = []
-        for i in range(macro_info["start"], macro_info["end"]):
+        for i in range(macro_info["start"], macro_info["end"]+1):
             command = self.def_tab[i].copy()
             command["label"] = command.get("label", "").replace("$", str(inv_frequency))
             expansion.append(command)
@@ -164,6 +167,7 @@ class MacroProcessor():
 
     def generate_processed_assembly(self):
         # __imrort__('pprint').pprint(self.original_processed)
+        f =  open("PGM_OP.ASM", "a")
         for i in self.original_processed:
             command_type = self.get_command_type(i)
             if command_type == CommandType.NORMAL:
@@ -171,7 +175,9 @@ class MacroProcessor():
             elif command_type == CommandType.INVOCATION:
                 invocation = self.get_macro_expansion(i["opcode"], i["operands"])
                 for i in invocation:
+                    f.write(self.detokenize(i) + "\n")
                     print(self.detokenize(i))
+                
             else:
                 # print(self.detokenize(i))
                 pass
@@ -189,7 +195,8 @@ def main():
     macroprocessor.display_nametab()
     print("OutputTab")
     macroprocessor.display_output_tab()
-    print("test op")
+    print("\n Output ")
+    print("------------")
     macroprocessor.generate_processed_assembly()
 
 if __name__ == "__main__":
